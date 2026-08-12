@@ -35,6 +35,16 @@
   </div>
 
   <script>
+
+  const PASSWORD_CORRETTA = "campeggio2026"; // Personalizza la password qui
+  const passwordInserita = prompt("Inserisci la password per accedere al Pannello Segreteria:");
+
+  if (passwordInserita !== PASSWORD_CORRETTA) {
+    alert("Password errata! Accesso negato.");
+    window.location.href = "index.html"; // Reindirizza gli utenti non autorizzati
+  }
+
+    
     const SUPABASE_URL = 'https://pnptcdhieyhnmukmfegs.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_LdNvg8y7y1-53q3VDal1DA_tk27D3cy';
     
