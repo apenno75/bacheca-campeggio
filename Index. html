@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bacheca Avvisi Campeggio</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary: #2d6a4f;
+      --bg: #f4f7f6;
+      --card-bg: #ffffff;
+      --text: #333333;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 15px;
+    }
+    header {
+      text-align: center;
+      padding: 15px 0;
+      background: var(--primary);
+      color: white;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    header h1 { margin: 0; font-size: 1.4rem; }
+    header p { margin: 5px 0 0; font-size: 0.85rem; opacity: 0.9; }
+    .feed { max-width: 600px; margin: 0 auto; }
+    .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    .card-time { font-size: 0.75rem; color: #777; margin-bottom: 8px; }
+    .card-text { font-size: 1rem; line-height: 1.4; white-space: pre-wrap; margin-bottom: 10px; }
+    .card-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; }
+    .empty-state { text-align: center; color: #888; padding: 40px 0; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>📢 Bacheca Campeggio</h1>
+    <p>Avvisi in tempo reale per tutti gli ospiti</p>
+  </header>
+
+  <div class="feed" id="feed">
+    <div class="empty-state">Caricamento avvisi...</div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://TUO-PROGETTO.supabase.co';
+    const SUPABASE_KEY = 'LA_TUA_ANON_KEY';
+    
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const feedEl = document.getElementById('feed');
+
+    async function caricaAvvisi() {
+      const { data, error } = await supabaseClient
+        .from('avvisi')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error("Errore caricamento:", error);
+        return;
+      }
+      mostraAvvisi(data);
+    }
+
+    function mostraAvvisi(avvisi) {
+      if (!avvisi || avvisi.length === 0) {
+        feedEl.innerHTML = '<div class="empty-state">Nessun avviso al momento.</div>';
+        return;
+      }
+
+      feedEl.innerHTML = '';
+      avvisi.forEach(data => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const dataFormattata = new Date(data.created_at).toLocaleString('it-IT', {
+          day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+        });
+
+        let content = `<div class="card-time">${dataFormattata}</div>`;
+        if (data.testo) content += `<div class="card-text">${data.testo}</div>`;
+        if (data.foto_url) content += `<img src="${data.foto_url}" class="card-img" alt="Foto avviso" loading="lazy">`;
+
+        card.innerHTML = content;
+        feedEl.appendChild(card);
+      });
+    }
+
+    // Ascolto eventi REALTIME
+    supabaseClient
+      .channel('schema-db-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'avvisi' }, () => {
+        caricaAvvisi();
+      })
+      .subscribe();
+
+    caricaAvvisi();
+  </script>
+</body>
+</html>
