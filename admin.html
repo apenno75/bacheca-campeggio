@@ -15,7 +15,25 @@
     button:disabled { background-color: #94d2bd; }
     .admin-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding: 10px 0; }
     .btn-delete { background-color: #d90429; font-size: 0.8rem; padding: 5px 10px; }
+  .btn-bacheca {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #0077b6;
+  color: white;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+.btn-bacheca:hover {
+  background-color: #023e8a;
+}
+  
   </style>
+  
 </head>
 <body>
 
@@ -27,6 +45,12 @@
     <br>
     <button id="btnInvio">Invia Avviso</button>
     <span id="status"></span>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+  <h2 style="margin: 0;">✍️ Pannello Segreteria</h2>
+  <a href="index.html" target="_blank" class="btn-bacheca">
+    👁️ Vai alla Bacheca
+  </a>
+</div>
   </div>
 
   <div class="panel">
